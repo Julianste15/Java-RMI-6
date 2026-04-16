@@ -20,6 +20,11 @@ public class ControladorPreferenciasUsuariosIml  extends UnicastRemoteObject imp
    public PreferenciasDTORespuesta getReferencias(Integer id) throws RemoteException {
     return this.servicioFachadaPreferencias.getReferencias(id);
    }
+
+   @Override
+   public Boolean registrarReferenciaAdministrador(CallBackInt objRemotoCliente) throws RemoteException {
+       return this.servicioFachadaPreferencias.registrarReferenciaAdministrador(objRemotoCliente);
+   }
         
 }
 

@@ -2,6 +2,8 @@
 package co.edu.unicauca.fachadaServices.services;
 
 import java.util.List;
+import java.util.ArrayList;
+import co.edu.unicauca.capaDeControladores.CallBackInt;
 
 import co.edu.unicauca.fachadaServices.DTO.CancionDTOEntrada;
 import co.edu.unicauca.fachadaServices.DTO.PreferenciasDTORespuesta;
@@ -15,11 +17,13 @@ public class PreferenciasServiceImpl implements IPreferenciasService {
 	private ComunicacionServidorCanciones comunicacionServidorCanciones;
 	private ComunicacionServidorReproducciones comunicacionServidorReproducciones;
 	private CalculadorPreferencias calculadorPreferencias;
+	private List<CallBackInt> administradoresRegistrados;
 
 	public PreferenciasServiceImpl() {
 		this.comunicacionServidorCanciones = new ComunicacionServidorCanciones();
 		this.comunicacionServidorReproducciones = new ComunicacionServidorReproducciones();
 		this.calculadorPreferencias = new CalculadorPreferencias();
+		this.administradoresRegistrados = new ArrayList<>();
 	}
 
 	@Override
@@ -38,6 +42,28 @@ public class PreferenciasServiceImpl implements IPreferenciasService {
 		for(ReproduccionesDTOEntrada reproduccion:reproduccionesUsuario){
 			System.out.println(reproduccion.getIdUsuario()+" "+reproduccion.getIdCancion());
 		}
-		return this.calculadorPreferencias.calcular(id, objCanciones, reproduccionesUsuario);
+		
+		PreferenciasDTORespuesta preferencias = this.calculadorPreferencias.calcular(id, objCanciones, reproduccionesUsuario);
+		notificarAdministradores(preferencias);
+		return preferencias;
 	}
+
+    @Override
+    public Boolean registrarReferenciaAdministrador(CallBackInt objRemotoCliente) {
+        if (objRemotoCliente != null && !administradoresRegistrados.contains(objRemotoCliente)) {
+            administradoresRegistrados.add(objRemotoCliente);
+            return true;
+        }
+        return false;
+    }
+    
+    private void notificarAdministradores(PreferenciasDTORespuesta mensaje) {
+        for (CallBackInt admin : administradoresRegistrados) {
+            try {
+                admin.notificar(mensaje);
+            } catch (Exception e) {
+                System.out.println("Error al notificar al administrador: " + e.getMessage());
+            }
+        }
+    }
 }
