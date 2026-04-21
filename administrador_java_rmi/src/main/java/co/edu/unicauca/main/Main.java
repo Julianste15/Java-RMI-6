@@ -22,5 +22,12 @@ public class Main {
         }
         
         System.out.println("Esperando notificaciones del servidor...");
+        while (true) {
+            try {
+                Thread.sleep(Long.MAX_VALUE);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
     }
 }
